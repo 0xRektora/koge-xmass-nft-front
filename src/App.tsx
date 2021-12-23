@@ -1,14 +1,7 @@
-import { ethers } from 'ethers'
+import { useEthers } from '@usedapp/core'
 import React from 'react'
 import img from './bg.jpg'
 import Gift from './Gift'
-import {
-  Mainnet,
-  DAppProvider,
-  useEtherBalance,
-  useEthers,
-  Config,
-} from '@usedapp/core'
 
 function App() {
   const { activateBrowserWallet, account } = useEthers()

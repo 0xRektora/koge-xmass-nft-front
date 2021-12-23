@@ -1,14 +1,12 @@
-import { useContractCall, useEthers, useTokenBalance } from '@usedapp/core'
+import { useEthers, useTokenBalance } from '@usedapp/core'
 import { ethers } from 'ethers'
-import { Interface } from 'ethers/lib/utils'
 import React from 'react'
+import ReactPlayer from 'react-player'
 //@ts-ignore
 import { Shake } from 'reshake'
-import { useWeb3Context } from 'web3-react'
 import gift from './gift.svg'
 import { KogeXMassNFT } from './typechain'
 import { useContract } from './useContract'
-import ReactPlayer from 'react-player'
 
 function Gift() {
   const { account, library, active } = useEthers()

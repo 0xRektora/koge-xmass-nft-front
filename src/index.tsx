@@ -1,10 +1,9 @@
+import { Config, DAppProvider } from '@usedapp/core'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
 import App from './App'
+import './index.css'
 import reportWebVitals from './reportWebVitals'
-import Web3Provider from 'web3-react'
-import { Config, DAppProvider } from '@usedapp/core'
 
 const config: Config = {
   readOnlyChainId: 137,
