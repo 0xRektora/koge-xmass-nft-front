@@ -35,29 +35,47 @@ function Gift() {
 
   const [heightOffset, setHeightOffset] = React.useState(0)
 
-  const updateBalance = React.useCallback(async () => {
+  const [playing, setPlaying] = React.useState(false)
+
+  const updateBalance = async () => {
     const _balance = (
       (await kgxm?.balanceOf(account ?? '')) ?? ethers.BigNumber.from(0)
     ).gt(0)
+    console.log(balance)
     setBalance(_balance)
     if (_balance) {
       setUri((await kgxm?.baseUri()) ?? '')
       console.log(await kgxm?.baseUri())
     }
-  }, [account, kgxm])
+  }
 
   React.useEffect(() => {
     ;(async () => {
       await updateBalance()
     })()
-  }, [updateBalance])
+  }, [account])
 
   const onChangeHover = React.useCallback((hover) => {
     setHeightOffset(hover ? 50 : 0)
   }, [])
 
   return balance && uri ? (
-    <ReactPlayer url={uri} playing loop height="60vh" />
+    <div onClick={() => setPlaying(true)}>
+      <ReactPlayer
+        url={uri}
+        controls
+        onBufferEnd={() => setPlaying(true)}
+        playing={playing}
+        loop
+        height="60vh"
+        onReady={() =>
+          setTimeout(() => {
+            setPlaying(true)
+            console.log('playing')
+          }, 1000)
+        }
+      />
+    </div>
   ) : (
     <Shake
       h={5}
@@ -70,7 +88,6 @@ function Gift() {
       fixedStop={false}
     >
       {!animationEnded &&
-        !balance &&
         (tokenBalanceKoge?.gte(ethers.utils.parseUnits('50', 9)) ||
           tokenBalanceVKoge?.gte(ethers.utils.parseUnits('20', 9))) && (
           <img
@@ -92,7 +109,7 @@ function Gift() {
               setGiftOpen(true)
               setTimeout(async () => {
                 setAnimationEnded(true)
-                updateBalance()
+                await updateBalance()
               }, 1000)
             }}
           />
