@@ -1,32 +1,22 @@
+import { ethers } from 'ethers'
 import React from 'react'
 import img from './bg.jpg'
-import gift from './gift.svg'
-//@ts-ignore
-import { Shake } from 'reshake'
-import { useWeb3Context } from 'web3-react'
-import { ethers } from 'ethers'
+import Gift from './Gift'
+import {
+  Mainnet,
+  DAppProvider,
+  useEtherBalance,
+  useEthers,
+  Config,
+} from '@usedapp/core'
 
 function App() {
-  const context = useWeb3Context()
-  const [etherjs, setEtherjs] = React.useState<typeof ethers | undefined>(
-    undefined,
-  )
-  const [giftOpen, setGiftOpen] = React.useState(false)
+  const { activateBrowserWallet, account } = useEthers()
 
   React.useEffect(() => {
-    context.setFirstValidConnector(['MetaMask', 'Infura'])
-  }, [])
-
-  React.useEffect(() => {
-    if (context.active) {
-      setEtherjs(context.library)
+    if (!account) {
+      activateBrowserWallet()
     }
-  }, [context.active, context.library])
-
-  const [heightOffset, setHeightOffset] = React.useState(0)
-
-  const onChangeHover = React.useCallback((hover) => {
-    setHeightOffset(hover ? 50 : 0)
   }, [])
 
   return (
@@ -40,28 +30,7 @@ function App() {
         justifyItems: 'center',
       }}
     >
-      <Shake
-        h={5}
-        v={5}
-        r={3}
-        dur={750}
-        int={10}
-        max={100}
-        fixed={true}
-        fixedStop={false}
-      >
-        <img
-          src={gift}
-          style={{
-            height: 300 - heightOffset,
-            transition: 'height 0.5s',
-            cursor: 'pointer',
-          }}
-          alt="gift"
-          onMouseEnter={() => onChangeHover(true)}
-          onMouseLeave={() => onChangeHover(false)}
-        />
-      </Shake>
+      {account && <Gift />}
     </div>
   )
 }

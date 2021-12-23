@@ -4,13 +4,20 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import Web3Provider from 'web3-react'
-import { connectors } from './Connectors'
+import { Config, DAppProvider } from '@usedapp/core'
+
+const config: Config = {
+  readOnlyChainId: 137,
+  readOnlyUrls: {
+    137: 'https://polygon-rpc.com/',
+  },
+}
 
 ReactDOM.render(
   <React.StrictMode>
-    <Web3Provider connectors={connectors} libraryName={'ethers.js'}>
+    <DAppProvider config={config}>
       <App />
-    </Web3Provider>
+    </DAppProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 )
