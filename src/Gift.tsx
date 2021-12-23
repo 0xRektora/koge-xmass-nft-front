@@ -20,7 +20,7 @@ function Gift() {
   )
 
   const kgxm = useContract<KogeXMassNFT>(
-    '0x58187e4ad8E888cE2824158A8c89F5fC538A20c0',
+    '0x8Ae17c70Fd0BB2A4EDdfB8740879120cB67db717',
     [
       'function balanceOf(address account) external view returns (uint256)',
       'function mint() external returns (uint256)',
