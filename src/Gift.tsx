@@ -20,7 +20,7 @@ function Gift() {
   )
 
   const kgxm = useContract<KogeXMassNFT>(
-    '0x390B068E74D063Ca72EF41c32507d505De6d3b8E',
+    '0xdB878fbF58533c18108d91eFbc570d9E6d7B9948',
     [
       'function balanceOf(address account) external view returns (uint256)',
       'function mint() external returns (uint256)',
@@ -37,16 +37,17 @@ function Gift() {
 
   const [muted, setMuted] = React.useState(true)
 
+  React.useEffect(() => {
+    ;(async () => {
+      setUri((await kgxm?.baseUri()) ?? '')
+    })()
+  }, [])
+
   const updateBalance = async () => {
     const _balance = (
       (await kgxm?.balanceOf(account ?? '')) ?? ethers.BigNumber.from(0)
     ).gt(0)
-    console.log(balance)
     setBalance(_balance)
-    if (_balance) {
-      setUri((await kgxm?.baseUri()) ?? '')
-      console.log(await kgxm?.baseUri())
-    }
   }
 
   React.useEffect(() => {
@@ -73,14 +74,15 @@ function Gift() {
       setGiftOpen(true)
       setTimeout(async () => {
         setAnimationEnded(true)
-        await updateBalance()
+        setTimeout(() => window.location.reload(), 500)
       }, 1000)
     } else {
       alert('You need 50 Koge or 20vKogeKoge!')
     }
   }
+  if (!uri) return <></>
 
-  return balance && uri ? (
+  return balance ? (
     <div onClick={() => setMuted(false)}>
       <ReactPlayer url={uri} playing muted={muted} loop height="60vh" />
     </div>
