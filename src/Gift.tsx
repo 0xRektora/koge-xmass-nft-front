@@ -20,7 +20,7 @@ function Gift() {
   )
 
   const kgxm = useContract<KogeXMassNFT>(
-    '0x8Ae17c70Fd0BB2A4EDdfB8740879120cB67db717',
+    '0x390B068E74D063Ca72EF41c32507d505De6d3b8E',
     [
       'function balanceOf(address account) external view returns (uint256)',
       'function mint() external returns (uint256)',
@@ -35,7 +35,7 @@ function Gift() {
 
   const [heightOffset, setHeightOffset] = React.useState(0)
 
-  const [playing, setPlaying] = React.useState(false)
+  const [muted, setMuted] = React.useState(true)
 
   const updateBalance = async () => {
     const _balance = (
@@ -59,22 +59,30 @@ function Gift() {
     setHeightOffset(hover ? 50 : 0)
   }, [])
 
+  const shaking = React.useMemo(
+    () =>
+      tokenBalanceKoge?.gte(ethers.utils.parseUnits('50', 9)) ||
+      tokenBalanceVKoge?.gte(ethers.utils.parseUnits('20', 9)),
+    [tokenBalanceKoge, tokenBalanceVKoge],
+  )
+
+  const onClickGift = async () => {
+    if (shaking) {
+      setHeightOffset(heightOffset + 20)
+      await (await kgxm?.connect(library?.getSigner() ?? '')?.mint())?.wait()
+      setGiftOpen(true)
+      setTimeout(async () => {
+        setAnimationEnded(true)
+        await updateBalance()
+      }, 1000)
+    } else {
+      alert('You need 50 Koge or 20vKogeKoge!')
+    }
+  }
+
   return balance && uri ? (
-    <div onClick={() => setPlaying(true)}>
-      <ReactPlayer
-        url={uri}
-        controls
-        onBufferEnd={() => setPlaying(true)}
-        playing={playing}
-        loop
-        height="60vh"
-        onReady={() =>
-          setTimeout(() => {
-            setPlaying(true)
-            console.log('playing')
-          }, 1000)
-        }
-      />
+    <div onClick={() => setMuted(false)}>
+      <ReactPlayer url={uri} playing muted={muted} loop height="60vh" />
     </div>
   ) : (
     <Shake
@@ -84,36 +92,24 @@ function Gift() {
       dur={750}
       int={10}
       max={100}
-      fixed={true}
+      fixed={shaking}
       fixedStop={false}
     >
-      {!animationEnded &&
-        (tokenBalanceKoge?.gte(ethers.utils.parseUnits('50', 9)) ||
-          tokenBalanceVKoge?.gte(ethers.utils.parseUnits('20', 9))) && (
-          <img
-            src={gift}
-            style={{
-              height: giftOpen ? 300 + heightOffset : 300 - heightOffset,
-              transition: 'height 0.5s, opacity 1s',
-              cursor: 'pointer',
-              opacity: Number(!giftOpen),
-            }}
-            alt="gift"
-            onMouseEnter={() => onChangeHover(true)}
-            onMouseLeave={() => onChangeHover(false)}
-            onClick={async () => {
-              setHeightOffset(heightOffset + 20)
-              await (
-                await kgxm?.connect(library?.getSigner() ?? '')?.mint()
-              )?.wait()
-              setGiftOpen(true)
-              setTimeout(async () => {
-                setAnimationEnded(true)
-                await updateBalance()
-              }, 1000)
-            }}
-          />
-        )}
+      {!animationEnded && (
+        <img
+          src={gift}
+          style={{
+            height: giftOpen ? 300 + heightOffset : 300 - heightOffset,
+            transition: 'height 0.5s, opacity 1s',
+            cursor: 'pointer',
+            opacity: Number(!giftOpen),
+          }}
+          alt="gift"
+          onMouseEnter={() => onChangeHover(true)}
+          onMouseLeave={() => onChangeHover(false)}
+          onClick={() => onClickGift()}
+        />
+      )}
     </Shake>
   )
 }
